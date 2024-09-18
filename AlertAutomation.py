@@ -15,6 +15,7 @@ from data_window import DataWindow
 
 DETAILS_FILE = "settings.details"
 DATA_FILE = "data.env"
+DB_FILE = "db.env"
 
 
 class CalendarDialog(QDialog):
@@ -58,6 +59,9 @@ class MainWindow(QMainWindow):
         self.data_file_path = ""
         self.column_name = ""
         self.remove_alert_date = ""  # New variable for remove alert date
+        self.db_HostName = ""
+        self.db_Port = ""
+        self.database = ""
 
         # Window settings
         self.setWindowTitle("Alerts Automation")
@@ -94,6 +98,7 @@ class MainWindow(QMainWindow):
 
         self.create_initial_ui()
         self.load_details()
+        self.print_alert_data()
 
     def create_initial_ui(self):
         layout = QVBoxLayout()
@@ -203,6 +208,23 @@ class MainWindow(QMainWindow):
             except Exception as e:
                 print(f"Error loading data: {e}")
 
+        if os.path.exists(DB_FILE):
+            try:
+                with open(DB_FILE, 'r') as f:
+                    data = json.load(f)
+                    if isinstance(data, list) and data:
+                        first_item = data[0]
+                        self.db_HostName = first_item.get('DB hostname', '')
+                        self.db_Port = first_item.get('db port', '')
+                        self.database = first_item.get('database', '')
+                        self.update_ui()
+            except json.JSONDecodeError as e:
+                print(f"Error decoding JSON from {DB_FILE}: {e}")
+            except Exception as e:
+                print(f"Error loading data: {e}")
+
+
+
     def update_ui(self):
         """Update UI based on the current state."""
         # Always display the form, regardless of validations
@@ -220,8 +242,6 @@ class MainWindow(QMainWindow):
         try:
             settings_dialog = SettingsDialog(self)
             if settings_dialog.exec_():
-                # Reload details after settings are updated
-                self.load_details()
                 self.update_ui()
         except Exception as e:
             print(f"Error opening settings dialog: {e}")
@@ -243,13 +263,20 @@ class MainWindow(QMainWindow):
         self.creator_id = data.get('Creator Id', '')
         self.category_code = data.get('Category Code', '')
         self.update_ui()
+    def set_db_data(self, data):
+        """Set alert data received from the data window."""
+        self.db_HostName = data.get('DB hostname', '')
+        self.db_Port = data.get('db port', '')
+        self.database = data.get('database', '')
+        self.update_ui()
+        self.print_alert_data()
 
     def print_alert_data(self):
         """Print alert data to the console."""
-        print("Alert Name:", self.alert_name)
-        print("Alert Text:", self.alert_text)
-        print("Creator Id:", self.creator_id)
-        print("Category Code:", self.category_code)
+        print("DB Hostname", self.db_HostName)
+        print("DB Port:", self.db_Port)
+        print("Database:", self.database)
+        print("--------------------------------------------------------")
 
 
 if __name__ == "__main__":
