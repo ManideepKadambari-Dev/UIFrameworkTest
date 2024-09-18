@@ -314,7 +314,6 @@ class MainWindow(QMainWindow):
         self.db_Port = data.get('db port', '')
         self.database = data.get('database', '')
         self.update_ui()
-        self.print_alert_data()
 
 
 if __name__ == "__main__":
