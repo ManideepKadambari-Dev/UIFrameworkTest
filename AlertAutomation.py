@@ -98,7 +98,6 @@ class MainWindow(QMainWindow):
 
         self.create_initial_ui()
         self.load_details()
-        self.print_alert_data()
 
     def create_initial_ui(self):
         layout = QVBoxLayout()
@@ -270,13 +269,6 @@ class MainWindow(QMainWindow):
         self.database = data.get('database', '')
         self.update_ui()
         self.print_alert_data()
-
-    def print_alert_data(self):
-        """Print alert data to the console."""
-        print("DB Hostname", self.db_HostName)
-        print("DB Port:", self.db_Port)
-        print("Database:", self.database)
-        print("--------------------------------------------------------")
 
 
 if __name__ == "__main__":
