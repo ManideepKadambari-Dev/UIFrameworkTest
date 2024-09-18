@@ -2,12 +2,13 @@ import sys
 from PyQt5.QtWidgets import (
     QApplication, QMainWindow, QAction, QToolBar, QWidget, QFormLayout, QLabel,
     QLineEdit, QPushButton, QVBoxLayout, QFileDialog, QSizePolicy, QDialog,
-    QVBoxLayout, QCalendarWidget, QHBoxLayout
+    QVBoxLayout, QCalendarWidget, QHBoxLayout,
 )
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt
 import json
 import os
+import winsound
 
 from settings_dialog import SettingsDialog
 from theme import set_dark_theme
@@ -161,6 +162,8 @@ class MainWindow(QMainWindow):
     def open_output_dialog_process(self):
         """Open the output dialog and simulate some processing."""
         self.output_dialog = OutputDialog(self)
+        self.output_dialog.setWindowModality(Qt.ApplicationModal)
+        self.setEnabled(False)
         self.output_redirector = OutputRedirector(self.output_dialog.text_edit)
         sys.stdout = self.output_redirector  # Redirect stdout to the OutputRedirector
         self.output_dialog.show()
@@ -168,6 +171,8 @@ class MainWindow(QMainWindow):
 
     def open_output_dialog_Verify(self):
         self.output_dialog = OutputDialog(self)
+        self.output_dialog.setWindowModality(Qt.ApplicationModal)
+        self.setEnabled(False)
         self.output_redirector = OutputRedirector(self.output_dialog.text_edit)
         sys.stdout = self.output_redirector  # Redirect stdout to the OutputRedirector
         """Open the output dialog and simulate some processing."""
@@ -176,12 +181,15 @@ class MainWindow(QMainWindow):
 
     def process_simulation(self):
         """Simulate some processing and output."""
-        for i in range(10):
+        for i in range(1000):
             print(f"Processing step {i + 1}...")
             QApplication.processEvents()  # Process events to ensure GUI updates
         import time
-        time.sleep(5)
+        winsound.MessageBeep(winsound.MB_ICONHAND)
+        time.sleep(1)
+        winsound.MessageBeep(winsound.MB_ICONEXCLAMATION)
         self.output_dialog.accept()
+        self.setEnabled(True)
 
     def verify_simulation(self):
         """Simulate some processing and output."""
@@ -189,8 +197,9 @@ class MainWindow(QMainWindow):
             print(f"Processing step {i + 1}...")
             QApplication.processEvents()  # Process events to ensure GUI updates
         import time
-        time.sleep(5)
+        time.sleep(1)
         self.output_dialog.accept()
+        self.setEnabled(True)
 
     def browse_file(self):
         """Open file dialog to select an xlsx or csv file."""

@@ -11,6 +11,12 @@ class OutputDialog(QDialog):
 
         self.text_edit = QTextEdit()
         self.text_edit.setReadOnly(True)  # Make text box read-only
+        self.text_edit.setStyleSheet("""
+                    background-color: #2e2e2e;
+                    color: white;
+                    border: 1px solid #5a5a5a;
+                    padding: 5px;
+                """)
 
         layout = QVBoxLayout()
         layout.addWidget(self.text_edit)
