@@ -12,6 +12,8 @@ import os
 from settings_dialog import SettingsDialog
 from theme import set_dark_theme
 from data_window import DataWindow
+from output_dialog import OutputRedirector
+from output_dialog import OutputDialog
 
 DETAILS_FILE = "settings.details"
 DATA_FILE = "data.env"
@@ -144,6 +146,8 @@ class MainWindow(QMainWindow):
         self.verify_button = QPushButton("Verify")
         button_layout.addWidget(self.process_button)
         button_layout.addWidget(self.verify_button)
+        self.process_button.clicked.connect(self.open_output_dialog_process)
+        self.verify_button.clicked.connect(self.open_output_dialog_Verify)
 
         # Add form layout and button layout to the main layout
         layout.addLayout(self.form_layout)
@@ -153,6 +157,40 @@ class MainWindow(QMainWindow):
 
         # Initially hide the form and button
         self.update_ui()
+
+    def open_output_dialog_process(self):
+        """Open the output dialog and simulate some processing."""
+        self.output_dialog = OutputDialog(self)
+        self.output_redirector = OutputRedirector(self.output_dialog.text_edit)
+        sys.stdout = self.output_redirector  # Redirect stdout to the OutputRedirector
+        self.output_dialog.show()
+        self.process_simulation()
+
+    def open_output_dialog_Verify(self):
+        self.output_dialog = OutputDialog(self)
+        self.output_redirector = OutputRedirector(self.output_dialog.text_edit)
+        sys.stdout = self.output_redirector  # Redirect stdout to the OutputRedirector
+        """Open the output dialog and simulate some processing."""
+        self.output_dialog.show()
+        self.verify_simulation()
+
+    def process_simulation(self):
+        """Simulate some processing and output."""
+        for i in range(10):
+            print(f"Processing step {i + 1}...")
+            QApplication.processEvents()  # Process events to ensure GUI updates
+        import time
+        time.sleep(5)
+        self.output_dialog.accept()
+
+    def verify_simulation(self):
+        """Simulate some processing and output."""
+        for i in range(10):
+            print(f"Processing step {i + 1}...")
+            QApplication.processEvents()  # Process events to ensure GUI updates
+        import time
+        time.sleep(5)
+        self.output_dialog.accept()
 
     def browse_file(self):
         """Open file dialog to select an xlsx or csv file."""
@@ -222,8 +260,6 @@ class MainWindow(QMainWindow):
             except Exception as e:
                 print(f"Error loading data: {e}")
 
-
-
     def update_ui(self):
         """Update UI based on the current state."""
         # Always display the form, regardless of validations
@@ -262,6 +298,7 @@ class MainWindow(QMainWindow):
         self.creator_id = data.get('Creator Id', '')
         self.category_code = data.get('Category Code', '')
         self.update_ui()
+
     def set_db_data(self, data):
         """Set alert data received from the data window."""
         self.db_HostName = data.get('DB hostname', '')
